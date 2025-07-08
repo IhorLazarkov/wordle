@@ -1,0 +1,89 @@
+body {
+  --prim-border: white;
+
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+#root {
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(2, 1ref);
+}
+
+h2 {
+  text-align: center;
+  margin-top: 0;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & div {
+    display: flex;
+    --gap: 5px;
+    gap: var(--gap);
+    margin-bottom: var(--gap);
+  }
+}
+
+span {
+  box-sizing: content-box;
+  border: 1px solid var(--prim-border);
+  color: var(--prim-border);
+
+  --dimention: 30px;
+  width: var(--dimention);
+  height: var(--dimention);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-transform: capitalize;
+}
+
+#root {
+  & section:has(button) {
+    background-color: darkgrey;
+  }
+
+  & button {
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid var(--prim-border);
+    color: var(--prim-border);
+  }
+}
+
+/* For narrow in landscape */
+@media screen and (orientation: landscape) and (width >= 700px) and (height >= 400px) {
+  button {
+    --dimention: 40px;
+    width: var(--dimention);
+    height: var(--dimention);
+    font-size: 1.5rem;
+  }
+
+  button[name="Enter"] {
+    width: fit-content;
+  }
+  button[name="Backspace"] {
+    width: fit-content;
+  }
+}
+
+/* For hight but narrow in portrait*/
+@media screen and (height >= 590px) {
+  h2 {
+    font-size: 3rem;
+  }
+  span {
+    --dimention: 43px;
+    width: var(--dimention);
+    height: var(--dimention);
+  }
+}
