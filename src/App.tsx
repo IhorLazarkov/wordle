@@ -112,7 +112,7 @@ const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
     <ListCommitedAttempts flags={flag} attempts={attempts} />
     {rowIndex.current < TOTAL_NUM_OF_ATTEMPTS && <>
       <ListCurrentAttempt rowIndex={rowIndex} currentAttempt={currentAttempt} />
-      <ListUnusedAttempts rowIndex={rowIndex} />
+      <ListUnusedAttempts rowIndex={rowIndex.current} />
     </>}
   </main>);
 }
@@ -168,21 +168,26 @@ const ListCurrentAttempt: FC<IPrintCurremtAttempt> = ({ rowIndex, currentAttempt
     </div></>)
 }
 
-interface IPrintUnusedAttempts { rowIndex: React.RefObject<number> }
+interface IPrintUnusedAttempts { rowIndex: number }
 /**
  * @description implements {@link IPrintUnusedAttempts} which accepts index of current attemp
  * that index will be used to get delta of TOTAL_ATTEMPT (6) - current index
- * @param rowIndex as {@link React.RefObject} typeof {@link number}
+ * @param rowIndex typeof {@link number}
  * @returns React component {@link FC}
  */
-const ListUnusedAttempts: FC<IPrintUnusedAttempts> = ({ rowIndex }) => {
+export const ListUnusedAttempts: FC<IPrintUnusedAttempts> = ({ rowIndex }) => {
   return (<>
-    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex.current - 1).fill('').map((_, iW) => (
+    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => (
       <div key={iW}>
-        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <span key={iCh}>{ch}</span>)}
+        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <Cell index={iCh} char={ch}/>)}
       </div>
     ))}
   </>)
+}
+
+interface ICell { index: number, char: string }
+export const Cell: FC<ICell> = ({ index, char }) => {
+  return (<span key={index}>{char}</span>);
 }
 
 /**
