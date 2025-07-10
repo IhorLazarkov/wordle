@@ -1,13 +1,24 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, cleanup } from '@testing-library/react'
 import "@testing-library/jest-dom/vitest"
-import { Cell, ListCommitedAttempts, ListCurrentAttempt, ListUnusedAttempts } from '../src/App'
+import { Cell, ListCommitedAttempts, ListCurrentAttempt, ListUnusedAttempts, ShowMisteryWord } from '../src/App'
 
 const isVisibleAndEmpty = (e: HTMLElement | null) => (
   expect(e).toBeVisible() && expect(e).toBeEmptyDOMElement())
 
-it.skip("Mistery word is rendering", async () => {
-  // TODO:
+it("Mistery word is rendering", async () => {
+  render(<ShowMisteryWord isToShow={false} word='cloud' />)
+  const emptyMisteryWord = screen.queryByTitle(/mistery word/i)
+  expect(emptyMisteryWord).toBeInTheDocument()
+  expect(emptyMisteryWord)
+
+  //render
+  cleanup()
+
+  render(<ShowMisteryWord isToShow={true} word='cloud' />)
+  const misteryWord = screen.queryByTitle(/mistery word/i)
+  expect(misteryWord).toBeVisible()
+  expect(misteryWord?.textContent).toEqual('it was cloud')
 })
 
 describe('Rendering empty cells', () => {
@@ -63,8 +74,8 @@ describe('Rendering squers with a charater', async () => {
     expect(cell?.innerText).toEqual('A')
   })
 
-  it('A group of cells are rendered with provided word and colors', ()=>{
-    render(<ListCommitedAttempts attempts={["hello"]} flags={['x+---']}/>)
+  it('A group of cells are rendered with provided word and colors', () => {
+    render(<ListCommitedAttempts attempts={["hello"]} flags={['x+---']} />)
 
     const groups = screen.queryAllByRole("group")
     const group = groups[0]

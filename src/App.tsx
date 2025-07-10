@@ -117,11 +117,11 @@ const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
   </main>);
 }
 
-const ShowMisteryWord: FC<{ isToShow: boolean, word: string }> = ({ isToShow, word }) => {
+export const ShowMisteryWord: FC<{ isToShow: boolean, word: string }> = ({ isToShow, word }) => {
   return (<>
     {isToShow
-      ? <div style={{ lineHeight: "1rem", textAlign: "center" }}>it was <b>{word}</b></div>
-      : <div style={{ lineHeight: "1rem" }}></div>}
+      ? <div title='mistery word container' style={{ lineHeight: "1rem", textAlign: "center" }}>it was <b>{word}</b></div>
+      : <div title='mistery word container' style={{ lineHeight: "1rem" }}></div>}
   </>)
 }
 
