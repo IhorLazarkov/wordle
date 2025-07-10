@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, cleanup } from '@testing-library/react'
 import "@testing-library/jest-dom/vitest"
-import { Cell, ListCommitedAttempts, ListCurrentAttempt, ListUnusedAttempts, ShowMisteryWord } from '../src/App'
+import { Cell, ListCommitedAttempts, ListCurrentAttempt, ListKeys, ListUnusedAttempts, ShowMisteryWord, type TKeys } from '../src/App'
 
 const isVisibleAndEmpty = (e: HTMLElement | null) => (
   expect(e).toBeVisible() && expect(e).toBeEmptyDOMElement())
@@ -10,7 +10,7 @@ it("Mistery word is rendering", async () => {
   render(<ShowMisteryWord isToShow={false} word='cloud' />)
   const emptyMisteryWord = screen.queryByTitle(/mistery word/i)
   expect(emptyMisteryWord).toBeInTheDocument()
-  expect(emptyMisteryWord)
+  expect(emptyMisteryWord).toBeEmptyDOMElement()
 
   //render
   cleanup()
@@ -18,7 +18,7 @@ it("Mistery word is rendering", async () => {
   render(<ShowMisteryWord isToShow={true} word='cloud' />)
   const misteryWord = screen.queryByTitle(/mistery word/i)
   expect(misteryWord).toBeVisible()
-  expect(misteryWord?.textContent).toEqual('it was cloud')
+  expect(misteryWord).toHaveTextContent('it was cloud')
 })
 
 describe('Rendering empty cells', () => {
@@ -38,11 +38,11 @@ describe('Rendering empty cells', () => {
 
     const groups = screen.queryAllByRole('group')
     const group = groups[0]
-    expect(groups.length).toBe(1)
+    expect(groups).toHaveLength(1)
     expect(group).toBeInTheDocument()
 
     const cells = screen.queryAllByRole("cell")
-    expect(cells.length).toEqual(5)
+    expect(cells).toHaveLength(5)
     cells.forEach(isVisibleAndEmpty)
   })
 
@@ -51,12 +51,12 @@ describe('Rendering empty cells', () => {
 
     const groups = screen.getAllByRole('group')
     const group = groups[0]
-    expect(groups.length).toEqual(1)
+    expect(groups).toHaveLength(1)
     expect(group).toBeVisible()
     expect(group).toBeInTheDocument()
 
     const cells = screen.getAllByRole('cell')
-    expect(cells.length).toEqual(5)
+    expect(cells).toHaveLength(5)
     cells.forEach(isVisibleAndEmpty)
   })
 })
@@ -71,7 +71,7 @@ describe('Rendering squers with a charater', async () => {
     const cell = screen.queryByRole('cell')
     expect(cell).toBeVisible()
     expect(cell).not.toBeEmptyDOMElement()
-    expect(cell?.innerText).toEqual('A')
+    expect(cell).toHaveTextContent('A')
   })
 
   it('A group of cells are rendered with provided word and colors', () => {
@@ -79,7 +79,7 @@ describe('Rendering squers with a charater', async () => {
 
     const groups = screen.queryAllByRole("group")
     const group = groups[0]
-    expect(groups.length).toEqual(1)
+    expect(groups).toHaveLength(1)
     expect(group).toBeVisible()
 
     const cells = screen.queryAllByRole('cell')
@@ -88,5 +88,33 @@ describe('Rendering squers with a charater', async () => {
     expect(cells[1].style.color).toEqual("green")
     expect(cells[2].style.color).toEqual("inherit")
   })
+})
 
+describe("Rendering keyboard", () => {
+
+  const keys: TKeys[] = [
+    { char: 'A', flag: '' },
+    { char: 'B', flag: '-' },
+    { char: 'C', flag: '+' },
+    { char: 'D', flag: 'x' },
+  ]
+
+  beforeEach(() => cleanup())
+
+  it("A key is rendered", () => {
+    render(<ListKeys keys={keys} arrSize={1} coef={0} />)
+    const button = screen.getByRole('button', { name: "A" })
+    expect(button).toBeVisible()
+    expect(button).toHaveTextContent('A')
+    expect(button.style.color).toEqual("inherit")
+  })
+
+  it("Keys are rendered", () => {
+    render(<ListKeys keys={keys} arrSize={4} coef={0} />)
+    const buttons = screen.getAllByRole('button')
+    expect(buttons).toHaveLength(4)
+    expect(buttons[1].style.color).toEqual("inherit")
+    expect(buttons[2].style.color).toEqual("green")
+    expect(buttons[3].style.color).toEqual("yellow")
+  })
 })

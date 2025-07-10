@@ -262,7 +262,7 @@ const keysReducer = (
  * (in correct position or incorrect) or not
 */
 type TFlag = "+" | "x" | "-" | ""
-type TKeys = { char: string, flag: TFlag }
+export type TKeys = { char: string, flag: TFlag }
 
 /**
  * @description prints visual keyboard and marks each key respectivery
@@ -291,7 +291,7 @@ const PrintKeyboard: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
 }
 
 interface IPrintKeys { keys: TKeys[], arrSize: number, coef: number }
-const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
+export const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
   const eventHandler = useContext(AttemptContext)
   const getStyle = (flag: TFlag) => {
     switch (flag) {
@@ -302,7 +302,7 @@ const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
     }
   }
   return (
-    <div style={{ display: "flex", gap: "3mm" }}>
+    <div role="group" style={{ display: "flex", gap: "3mm" }}>
       {new Array(arrSize).fill('').map((_, i) => {
         const { char, flag } = keys[i + coef]
         return <button
