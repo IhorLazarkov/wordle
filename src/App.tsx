@@ -89,30 +89,30 @@ function App() {
       <section>
         <h2>Wordl</h2>
         <Board
-          flag={feedback}
-          rowIndex={rowIndex}
+          flag={feedback.current}
+          rowIndex={rowIndex.current}
           attempts={attempts}
           currentAttempt={currentAttempt}
         />
       </section>
       <ShowMisteryWord isToShow={isToShowTargetWord} word={targetWord.current} />
-      <PrintKeyboard flags={feedback} attempts={attempts} />
+      <PrintKeyboard flags={feedback.current} attempts={attempts} />
     </AttemptContext.Provider >
   )
 }
 
 interface IBoard {
-  flag: React.RefObject<string[]>,
+  flag: string[],
   attempts: Array<string>,
   currentAttempt: string,
-  rowIndex: React.RefObject<number>
+  rowIndex: number
 }
 const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
   return (<main>
     <ListCommitedAttempts flags={flag} attempts={attempts} />
-    {rowIndex.current < TOTAL_NUM_OF_ATTEMPTS && <>
+    {rowIndex < TOTAL_NUM_OF_ATTEMPTS && <>
       <ListCurrentAttempt rowIndex={rowIndex} currentAttempt={currentAttempt} />
-      <ListUnusedAttempts rowIndex={rowIndex.current} />
+      <ListUnusedAttempts rowIndex={rowIndex} />
     </>}
   </main>);
 }
@@ -125,7 +125,7 @@ const ShowMisteryWord: FC<{ isToShow: boolean, word: string }> = ({ isToShow, wo
   </>)
 }
 
-interface IPrintCommittedAttempts { attempts: string[], flags: React.RefObject<string[]> }
+interface IPrintCommittedAttempts { attempts: string[], flags: string[] }
 /**
  * @description implements {@link IPrintCommittedAttempts} which
  * accepts processed attempts (words for which positions of attempted charaters were analyzed)
@@ -133,16 +133,16 @@ interface IPrintCommittedAttempts { attempts: string[], flags: React.RefObject<s
  * @param currentAttempt as {@link string}
  * @returns React conponent {@link FC}
  */
-const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
+export const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
   return (<>
     {attempts.map((w, i) => (
-      <div key={i}>
+      <div role="group" key={i}>
         {w.split('').map((ch, iCh) => {
           const style = { backgroundColor: "grey", color: "inherit" }
-          const feedbackFlag = flags.current[i][iCh]
+          const feedbackFlag = flags[i][iCh]
           if (feedbackFlag === 'x') style.color = "yellow"
           else if (feedbackFlag === '+') style.color = "green"
-          return <span style={style} key={iCh}>{ch}</span>
+          return <Cell style={style} index={iCh} char={ch} />
         })}
       </div>
     ))}
@@ -150,7 +150,7 @@ const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, flags }) 
 }
 
 interface IPrintCurremtAttempt {
-  rowIndex: React.RefObject<number>,
+  rowIndex: number,
   currentAttempt: string
 }
 /**
@@ -160,11 +160,11 @@ interface IPrintCurremtAttempt {
  * @param currentAttempt as {@link React.RefObject} typeof {@link string}
  * @returns React conponent {@link FC}
  */
-const ListCurrentAttempt: FC<IPrintCurremtAttempt> = ({ rowIndex, currentAttempt }) => {
+export const ListCurrentAttempt: FC<IPrintCurremtAttempt> = ({ rowIndex, currentAttempt }) => {
   return (<>
-    <div key={rowIndex.current}>
-      {currentAttempt.split('').map((ch, iCh) => <span key={iCh}>{ch}</span>)}
-      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <span key={iCh}>{ch}</span>)}
+    <div role='group' key={rowIndex}>
+      {currentAttempt.split('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
+      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
     </div></>)
 }
 
@@ -178,16 +178,16 @@ interface IPrintUnusedAttempts { rowIndex: number }
 export const ListUnusedAttempts: FC<IPrintUnusedAttempts> = ({ rowIndex }) => {
   return (<>
     {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => (
-      <div key={iW}>
-        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <Cell index={iCh} char={ch}/>)}
+      <div role='group' key={iW}>
+        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
       </div>
     ))}
   </>)
 }
 
-interface ICell { index: number, char: string }
-export const Cell: FC<ICell> = ({ index, char }) => {
-  return (<span key={index}>{char}</span>);
+interface ICell { index: number, char: string, style: {} }
+export const Cell: FC<ICell> = ({ index, char, style }) => {
+  return (<span style={style} role='cell' key={index}>{char}</span>);
 }
 
 /**
@@ -240,7 +240,7 @@ const keysReducer = (
       for (let i = 0; i < attempts.length; i++) {
         const curRow = i;
         const curWord = attempts[curRow]
-        const curFlags = flags.current[curRow]
+        const curFlags = flags[curRow]
         for (let j = 0; j < WORD_LENGTH; j++) {
           const curChar = curWord[j]
           const curFlag = curFlags[j]
