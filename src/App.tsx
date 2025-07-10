@@ -130,7 +130,7 @@ interface IPrintCommittedAttempts { attempts: string[], flags: string[] }
  * @description implements {@link IPrintCommittedAttempts} which
  * accepts processed attempts (words for which positions of attempted charaters were analyzed)
  * @param attempts as {@link Array} of {@link String}
- * @param currentAttempt as {@link string}
+ * @param flags as {@link string}
  * @returns React conponent {@link FC}
  */
 export const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
