@@ -103,11 +103,11 @@ function App() {
 
 interface IBoard {
   flag: string[],
-  attempts: Array<string>,
+  attempts: string[],
   currentAttempt: string,
   rowIndex: number
 }
-const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
+export const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
   return (<main>
     <ListCommitedAttempts flags={flag} attempts={attempts} />
     {rowIndex < TOTAL_NUM_OF_ATTEMPTS && <>
@@ -195,8 +195,8 @@ export const Cell: FC<ICell> = ({ index, char, style }) => {
  * @param state as {@link Array} of {@link TKeys}
  * @param action as {@link IPrintCommittedAttempts}
  */
-enum KEYS_ACTION { RUN = "run" }
-const initKeys: Array<TKeys> = [
+export enum KEYS_ACTION { RUN = "run" }
+export const initKeys: Array<TKeys> = [
   { char: 'q', flag: "" },
   { char: 'w', flag: "" },
   { char: 'e', flag: "" },
@@ -226,7 +226,7 @@ const initKeys: Array<TKeys> = [
   { char: 'n', flag: "" },
   { char: 'm', flag: "" }
 ]
-const keysReducer = (
+export const keysReducer = (
   state: Array<TKeys> = initKeys,
   action: { type: KEYS_ACTION, payload: IPrintCommittedAttempts }) => {
 

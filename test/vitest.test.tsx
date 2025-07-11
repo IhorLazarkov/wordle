@@ -1,7 +1,7 @@
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, cleanup } from '@testing-library/react'
 import "@testing-library/jest-dom/vitest"
-import { Cell, ListCommitedAttempts, ListCurrentAttempt, ListKeys, ListUnusedAttempts, ShowMisteryWord, type TKeys } from '../src/App'
+import { render, screen, cleanup } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { Board, Cell, initKeys, KEYS_ACTION, keysReducer, ListCommitedAttempts, ListCurrentAttempt, ListKeys, ListUnusedAttempts, ShowMisteryWord, type TKeys } from '../src/App'
 
 const isVisibleAndEmpty = (e: HTMLElement | null) => (
   expect(e).toBeVisible() && expect(e).toBeEmptyDOMElement())
@@ -88,6 +88,81 @@ describe('Rendering squers with a charater', async () => {
     expect(cells[1].style.color).toEqual("green")
     expect(cells[2].style.color).toEqual("inherit")
   })
+})
+
+describe("Rendering of a board", () => {
+
+  beforeEach(() => cleanup())
+
+  it("Check the bord when no attempts made and no current attempt", () => {
+    render(<Board
+      rowIndex={0}
+      currentAttempt=""
+      attempts={[]}
+      flag={[]}
+    />)
+    // There should be 6 goups
+    const groups = screen.getAllByRole('group')
+    expect(groups).toHaveLength(6)
+
+    // Each group should have empty 5 cells
+    groups.forEach(row => {
+      const cells = row.querySelectorAll('span')
+      expect(cells).toHaveLength(5)
+      cells.forEach(expect.toBeEmptyDOMElement)
+    })
+  })
+
+  it("Check the bord when 1 attempt made and 1 current attempt", () => {
+    render(<Board
+      rowIndex={1}
+      currentAttempt="hello"
+      attempts={["cloud"]}
+      flag={["--x+-"]}
+    />)
+    // There should be 6 goups
+    const groups = screen.getAllByRole('group')
+    expect(groups).toHaveLength(6)
+
+    groups.forEach((row, i) => {
+      if (i === 0) {
+        expect(row.innerText.replaceAll('\n', '')).toEqual("CLOUD")
+      }
+      if (i === 1) {
+        expect(row.innerText.replaceAll('\n', '')).toEqual("HELLO")
+      }
+      if (i === 5) {
+        const cells = row.querySelectorAll('span')
+        expect(cells).toHaveLength(5)
+        cells.forEach(expect.toBeEmptyDOMElement)
+      }
+    })
+  })
+})
+
+it("Attempts analyze", () => {
+  const keyboard: TKeys[] = [
+    { char: 'h', flag: '' },
+    { char: 'e', flag: '' },
+    { char: 'l', flag: '' },
+    { char: 'l', flag: '' },
+    { char: 'o', flag: '' },
+  ]
+  const keys = keysReducer(keyboard,
+    {
+      type: KEYS_ACTION.RUN,
+      payload: {
+        attempts: ["hello"],
+        flags: ["--x++"]
+      }
+    })
+  // Check first char
+  expect(keys[0].char).toEqual('h')
+  expect(keys[0].flag).toEqual('-')
+
+  // Check last char
+  expect(keys[4].char).toEqual('o')
+  expect(keys[4].flag).toEqual('+')
 })
 
 describe("Rendering keyboard", () => {
