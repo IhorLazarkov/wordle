@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest"
 import { render, screen, cleanup } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { Board, Cell, initKeys, KEYS_ACTION, keysReducer, ListCommitedAttempts, ListCurrentAttempt, ListKeys, ListUnusedAttempts, ShowMisteryWord, type TKeys } from '../src/App'
+import { Board, Cell, KEYS_ACTION, keysReducer, ListCommitedAttempts, ListCurrentAttempt, ListKeys, ListUnusedAttempts, ShowMisteryWord, type TKeys } from '../src/App'
 
 const isVisibleAndEmpty = (e: HTMLElement | null) => (
   expect(e).toBeVisible() && expect(e).toBeEmptyDOMElement())
@@ -90,7 +90,7 @@ describe('Rendering squers with a charater', async () => {
   })
 })
 
-describe("Rendering of a board", () => {
+describe("Rendering of a Board", () => {
 
   beforeEach(() => cleanup())
 
@@ -137,6 +137,18 @@ describe("Rendering of a board", () => {
         cells.forEach(expect.toBeEmptyDOMElement)
       }
     })
+  })
+
+  it("Check the board does not print current attempt and unused attempts", () => {
+        render(<Board
+      rowIndex={6}
+      currentAttempt=""
+      attempts={["cloud", "hello", "foggy", "world", "sorry", "marry"]}
+      flag={["--x+-","---+-","--x--","x--+-","---++","++-++"]}
+    />)
+    const groups = screen.getAllByRole('group')
+    expect(groups).toHaveLength(6)
+    expect(groups[5].innerText.replaceAll("\n", '')).toEqual("MARRY")
   })
 })
 

@@ -196,7 +196,7 @@ export const Cell: FC<ICell> = ({ index, char, style }) => {
  * @param action as {@link IPrintCommittedAttempts}
  */
 export enum KEYS_ACTION { RUN = "run" }
-export const initKeys: Array<TKeys> = [
+const initKeys: Array<TKeys> = [
   { char: 'q', flag: "" },
   { char: 'w', flag: "" },
   { char: 'e', flag: "" },
