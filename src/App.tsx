@@ -103,11 +103,11 @@ function App() {
 
 interface IBoard {
   flag: string[],
-  attempts: Array<string>,
+  attempts: string[],
   currentAttempt: string,
   rowIndex: number
 }
-const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
+export const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
   return (<main>
     <ListCommitedAttempts flags={flag} attempts={attempts} />
     {rowIndex < TOTAL_NUM_OF_ATTEMPTS && <>
@@ -117,11 +117,11 @@ const Board: FC<IBoard> = ({ rowIndex, currentAttempt, attempts, flag }) => {
   </main>);
 }
 
-const ShowMisteryWord: FC<{ isToShow: boolean, word: string }> = ({ isToShow, word }) => {
+export const ShowMisteryWord: FC<{ isToShow: boolean, word: string }> = ({ isToShow, word }) => {
   return (<>
     {isToShow
-      ? <div style={{ lineHeight: "1rem", textAlign: "center" }}>it was <b>{word}</b></div>
-      : <div style={{ lineHeight: "1rem" }}></div>}
+      ? <div title='mistery word container' style={{ lineHeight: "1rem", textAlign: "center" }}>it was <b>{word}</b></div>
+      : <div title='mistery word container' style={{ lineHeight: "1rem" }}></div>}
   </>)
 }
 
@@ -142,7 +142,13 @@ export const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, fl
           const feedbackFlag = flags[i][iCh]
           if (feedbackFlag === 'x') style.color = "yellow"
           else if (feedbackFlag === '+') style.color = "green"
-          return <Cell style={style} index={iCh} char={ch} />
+          return <Cell
+            key={`${i}:${iCh}`}
+            style={style}
+            rowIndex={i}
+            index={iCh}
+            char={ch}
+          />
         })}
       </div>
     ))}
@@ -161,11 +167,23 @@ interface IPrintCurremtAttempt {
  * @returns React conponent {@link FC}
  */
 export const ListCurrentAttempt: FC<IPrintCurremtAttempt> = ({ rowIndex, currentAttempt }) => {
-  return (<>
+  return (
     <div role='group' key={rowIndex}>
-      {currentAttempt.split('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
-      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
-    </div></>)
+      {currentAttempt.split('').map((ch, iCh) => <Cell
+        style={{}}
+        key={`${rowIndex}:${iCh}`}
+        rowIndex={rowIndex}
+        index={iCh}
+        char={ch}
+      />)}
+      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <Cell
+        style={{}}
+        key={`${rowIndex}:${iCh}`}
+        rowIndex={rowIndex}
+        index={iCh}
+        char={ch} />)}
+    </div>
+  )
 }
 
 interface IPrintUnusedAttempts { rowIndex: number }
@@ -177,17 +195,24 @@ interface IPrintUnusedAttempts { rowIndex: number }
  */
 export const ListUnusedAttempts: FC<IPrintUnusedAttempts> = ({ rowIndex }) => {
   return (<>
-    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => (
-      <div role='group' key={iW}>
-        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
+    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => {
+      const index = iW + rowIndex + 1;
+      return <div role='group' key={index}>
+        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => (<Cell
+          key={`${index}:${iCh}`}
+          style={{}}
+          rowIndex={index}
+          index={iCh}
+          char={ch}
+        />))}
       </div>
-    ))}
+    })}
   </>)
 }
 
-interface ICell { index: number, char: string, style: {} }
-export const Cell: FC<ICell> = ({ index, char, style }) => {
-  return (<span style={style} role='cell' key={index}>{char}</span>);
+interface ICell { rowIndex: number, index: number, char: string, style: {} }
+export const Cell: FC<ICell> = ({ rowIndex, index, char, style }) => {
+  return (<span style={style} role='cell' key={`${rowIndex}:${index}`}>{char}</span>);
 }
 
 /**
@@ -195,7 +220,7 @@ export const Cell: FC<ICell> = ({ index, char, style }) => {
  * @param state as {@link Array} of {@link TKeys}
  * @param action as {@link IPrintCommittedAttempts}
  */
-enum KEYS_ACTION { RUN = "run" }
+export enum KEYS_ACTION { RUN = "run" }
 const initKeys: Array<TKeys> = [
   { char: 'q', flag: "" },
   { char: 'w', flag: "" },
@@ -226,7 +251,7 @@ const initKeys: Array<TKeys> = [
   { char: 'n', flag: "" },
   { char: 'm', flag: "" }
 ]
-const keysReducer = (
+export const keysReducer = (
   state: Array<TKeys> = initKeys,
   action: { type: KEYS_ACTION, payload: IPrintCommittedAttempts }) => {
 
@@ -262,7 +287,7 @@ const keysReducer = (
  * (in correct position or incorrect) or not
 */
 type TFlag = "+" | "x" | "-" | ""
-type TKeys = { char: string, flag: TFlag }
+export type TKeys = { char: string, flag: TFlag }
 
 /**
  * @description prints visual keyboard and marks each key respectivery
@@ -276,13 +301,15 @@ const PrintKeyboard: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
   useEffect(() => dispatch({ type: KEYS_ACTION.RUN, payload: { attempts, flags } }), [attempts])
 
   return (
-    <section style={{
-      display: 'flex',
-      flexDirection: "column",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: "1mm"
-    }}>
+    <section
+      role="navigation"
+      style={{
+        display: 'flex',
+        flexDirection: "column",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "1mm"
+      }}>
       <ListKeys arrSize={11} keys={keys} coef={0} />
       <ListKeys arrSize={10} keys={keys} coef={11} />
       <ListKeys arrSize={7} keys={keys} coef={21} />
@@ -291,7 +318,7 @@ const PrintKeyboard: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
 }
 
 interface IPrintKeys { keys: TKeys[], arrSize: number, coef: number }
-const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
+export const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
   const eventHandler = useContext(AttemptContext)
   const getStyle = (flag: TFlag) => {
     switch (flag) {
@@ -302,7 +329,7 @@ const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
     }
   }
   return (
-    <div style={{ display: "flex", gap: "3mm" }}>
+    <div role="group" style={{ display: "flex", gap: "3mm" }}>
       {new Array(arrSize).fill('').map((_, i) => {
         const { char, flag } = keys[i + coef]
         return <button
