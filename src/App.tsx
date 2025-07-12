@@ -142,7 +142,13 @@ export const ListCommitedAttempts: FC<IPrintCommittedAttempts> = ({ attempts, fl
           const feedbackFlag = flags[i][iCh]
           if (feedbackFlag === 'x') style.color = "yellow"
           else if (feedbackFlag === '+') style.color = "green"
-          return <Cell style={style} index={iCh} char={ch} />
+          return <Cell
+            key={`${i}:${iCh}`}
+            style={style}
+            rowIndex={i}
+            index={iCh}
+            char={ch}
+          />
         })}
       </div>
     ))}
@@ -161,11 +167,23 @@ interface IPrintCurremtAttempt {
  * @returns React conponent {@link FC}
  */
 export const ListCurrentAttempt: FC<IPrintCurremtAttempt> = ({ rowIndex, currentAttempt }) => {
-  return (<>
+  return (
     <div role='group' key={rowIndex}>
-      {currentAttempt.split('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
-      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
-    </div></>)
+      {currentAttempt.split('').map((ch, iCh) => <Cell
+        style={{}}
+        key={`${rowIndex}:${iCh}`}
+        rowIndex={rowIndex}
+        index={iCh}
+        char={ch}
+      />)}
+      {new Array(5 - currentAttempt.length).fill('').map((ch, iCh) => <Cell
+        style={{}}
+        key={`${rowIndex}:${iCh}`}
+        rowIndex={rowIndex}
+        index={iCh}
+        char={ch} />)}
+    </div>
+  )
 }
 
 interface IPrintUnusedAttempts { rowIndex: number }
@@ -177,17 +195,24 @@ interface IPrintUnusedAttempts { rowIndex: number }
  */
 export const ListUnusedAttempts: FC<IPrintUnusedAttempts> = ({ rowIndex }) => {
   return (<>
-    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => (
-      <div role='group' key={iW}>
-        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => <Cell style={{}} index={iCh} char={ch} />)}
+    {new Array(TOTAL_NUM_OF_ATTEMPTS - rowIndex - 1).fill('').map((_, iW) => {
+      const index = iW + rowIndex + 1;
+      return <div role='group' key={index}>
+        {new Array(WORD_LENGTH).fill('').map((ch, iCh) => (<Cell
+          key={`${index}:${iCh}`}
+          style={{}}
+          rowIndex={index}
+          index={iCh}
+          char={ch}
+        />))}
       </div>
-    ))}
+    })}
   </>)
 }
 
-interface ICell { index: number, char: string, style: {} }
-export const Cell: FC<ICell> = ({ index, char, style }) => {
-  return (<span style={style} role='cell' key={index}>{char}</span>);
+interface ICell { rowIndex: number, index: number, char: string, style: {} }
+export const Cell: FC<ICell> = ({ rowIndex, index, char, style }) => {
+  return (<span style={style} role='cell' key={`${rowIndex}:${index}`}>{char}</span>);
 }
 
 /**
@@ -276,13 +301,15 @@ const PrintKeyboard: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
   useEffect(() => dispatch({ type: KEYS_ACTION.RUN, payload: { attempts, flags } }), [attempts])
 
   return (
-    <section style={{
-      display: 'flex',
-      flexDirection: "column",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: "1mm"
-    }}>
+    <section
+      role="navigation"
+      style={{
+        display: 'flex',
+        flexDirection: "column",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "1mm"
+      }}>
       <ListKeys arrSize={11} keys={keys} coef={0} />
       <ListKeys arrSize={10} keys={keys} coef={11} />
       <ListKeys arrSize={7} keys={keys} coef={21} />
