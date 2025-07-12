@@ -46,5 +46,14 @@ test.describe("Game board", () => {
 
     const second_row = page.locator("main div:nth-child(2)");
     expect(second_row).toHaveText("CLOUD");
+
+    "WORLD".split("").forEach(async (ch) => {
+      await board.press(ch);
+    });
+    await board.press("Enter");
+    await board.press("Enter");
+
+    const third_row = page.locator("main div:nth-child(3)");
+    expect(third_row).toHaveText("WORLD");
   });
 });

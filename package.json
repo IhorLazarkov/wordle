@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
+    "integration" : "npx playwright test",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
