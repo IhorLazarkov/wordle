@@ -26,7 +26,7 @@ describe('Rendering empty cells', () => {
   beforeEach(() => cleanup())
 
   it("An Empty cell is rendering", () => {
-    render(<Cell style={{}} index={1} char='' />)
+    render(<Cell rowIndex={0} style={{}} index={1} char='' />)
 
     const cell = screen.queryByRole('cell')
     expect(cell).toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('Rendering squers with a charater', async () => {
   beforeEach(() => cleanup())
 
   it('A cell is rendering "A" character', async () => {
-    render(<Cell style={{}} index={1} char='A' />)
+    render(<Cell style={{}} rowIndex={0} index={1} char='A' />)
 
     const cell = screen.queryByRole('cell')
     expect(cell).toBeVisible()
