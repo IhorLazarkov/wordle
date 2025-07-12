@@ -5,7 +5,7 @@ test.describe("Game board", () => {
     await page.goto("http://localhost:5173");
 
     await expect(page).toHaveTitle(/Wordl/);
-    await expect(page.getByRole("heading", { name: "Wordl" })).toBeInViewport();
+    await expect(page.getByRole("heading", { name: "Wordle" })).toBeInViewport();
 
     await expect(page.getByRole("main")).toBeInViewport();
     await expect(page.getByRole("navigation")).toBeInViewport();

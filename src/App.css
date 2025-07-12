@@ -31,13 +31,16 @@ main {
 }
 
 span {
-  box-sizing: content-box;
+  box-sizing: border-box;
   border: 1px solid var(--prim-border);
   color: var(--prim-border);
 
-  --dimention: 30px;
+  --dimention: 40px;
   width: var(--dimention);
   height: var(--dimention);
+
+      font-size: 1.25em;
+    font-weight: bold;
 
   display: flex;
   justify-content: center;
@@ -46,16 +49,30 @@ span {
   text-transform: capitalize;
 }
 
-#root {
-  & section:has(button) {
-    background-color: darkgrey;
+section[role="navigation"] {
+  & div:has(button) {
+    display: flex;
+    gap: 3px;
+
+    box-sizing: border-box;
   }
 
   & button {
     cursor: pointer;
+    text-transform: uppercase;
     box-sizing: border-box;
-    border: 1px solid var(--prim-border);
+    border: 0 solid var(--prim-border);
+
+    font-size: 1.25em;
+    font-weight: bold;
+    border-radius: 4px;
+    background-color: #818384;
     color: var(--prim-border);
+    padding: 1rem;
+  }
+  & button[name="Enter"] {
+    font-size: 0.5em;
+    width: fit-content;
   }
 }
 
@@ -66,6 +83,8 @@ span {
     width: var(--dimention);
     height: var(--dimention);
     font-size: 1.5rem;
+    vertical-align: middle;
+    align-content: center;
   }
 
   button[name="Enter"] {

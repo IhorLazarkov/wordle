@@ -1,5 +1,6 @@
 import './App.css'
 import React, { createContext, useContext, useEffect, useReducer, useRef, useState, type FC } from "react";
+import { IoBackspaceOutline } from "react-icons/io5";
 
 const TOTAL_NUM_OF_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
@@ -87,7 +88,7 @@ function App() {
   return (
     <AttemptContext.Provider value={eventHandler}>
       <section>
-        <h2>Wordl</h2>
+        <h2>Wordle</h2>
         <Board
           flag={feedback.current}
           rowIndex={rowIndex.current}
@@ -232,7 +233,6 @@ const initKeys: Array<TKeys> = [
   { char: 'i', flag: "" },
   { char: 'o', flag: "" },
   { char: 'p', flag: "" },
-  { char: 'Backspace', flag: "" },
   { char: 'a', flag: "" },
   { char: 's', flag: "" },
   { char: 'd', flag: "" },
@@ -249,7 +249,8 @@ const initKeys: Array<TKeys> = [
   { char: 'v', flag: "" },
   { char: 'b', flag: "" },
   { char: 'n', flag: "" },
-  { char: 'm', flag: "" }
+  { char: 'm', flag: "" },
+  { char: 'Backspace', flag: "" }
 ]
 export const keysReducer = (
   state: Array<TKeys> = initKeys,
@@ -310,9 +311,9 @@ const PrintKeyboard: FC<IPrintCommittedAttempts> = ({ attempts, flags }) => {
         flexWrap: "wrap",
         gap: "1mm"
       }}>
-      <ListKeys arrSize={11} keys={keys} coef={0} />
-      <ListKeys arrSize={10} keys={keys} coef={11} />
-      <ListKeys arrSize={7} keys={keys} coef={21} />
+      <ListKeys arrSize={10} keys={keys} coef={0} />
+      <ListKeys arrSize={9} keys={keys} coef={10} />
+      <ListKeys arrSize={9} keys={keys} coef={19} />
     </section>
   );
 }
@@ -322,22 +323,31 @@ export const ListKeys: FC<IPrintKeys> = ({ keys, arrSize, coef }) => {
   const eventHandler = useContext(AttemptContext)
   const getStyle = (flag: TFlag) => {
     switch (flag) {
-      case "+": return { backgroundColor: "grey", color: "green" };
-      case "x": return { backgroundColor: "grey", color: "yellow" };
-      case "-": return { backgroundColor: "grey", color: "inherit" };
-      default: return { backgroundColor: "inherit", color: "inherit" };
+      case "+": return { color: "green" };
+      case "x": return { color: "yellow" };
+      case "-": return { color: "inherit" };
+      default: return { color: "inherit" };
     }
   }
   return (
-    <div role="group" style={{ display: "flex", gap: "3mm" }}>
+    <div role="group">
       {new Array(arrSize).fill('').map((_, i) => {
         const { char, flag } = keys[i + coef]
-        return <button
-          key={i}
-          style={getStyle(flag)}
-          name={char}
-          onClick={() => eventHandler({ key: char })}
-        >{char}</button>
+        if (char === "Backspace") {
+          return <button
+            key={i}
+            style={getStyle(flag)}
+            name={char}
+            onClick={() => eventHandler({ key: char })}
+          ><IoBackspaceOutline /></button>
+        } else {
+          return <button
+            key={i}
+            style={getStyle(flag)}
+            name={char}
+            onClick={() => eventHandler({ key: char })}
+          >{char}</button>
+        }
       })}
     </div>
   );
