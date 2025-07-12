@@ -87,7 +87,7 @@ function App() {
   return (
     <AttemptContext.Provider value={eventHandler}>
       <section>
-        <h2>Wordl</h2>
+        <h2>Wordle</h2>
         <Board
           flag={feedback.current}
           rowIndex={rowIndex.current}
